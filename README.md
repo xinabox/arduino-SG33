@@ -1,5 +1,5 @@
 # ☒CHIP SG33 
-<img src="extras/SG33 V0.5.0.JPG" width="300" align="right">
+<img src="extras/SG33 V0.5.0.JPG" width="35%" height="auto" align="right">
 Sensor Module based on the CCS811 Air Quality sensor.
 
 This module can be purchased on [Xinabox CC](https://xinabox.cc/products/SG33/).
