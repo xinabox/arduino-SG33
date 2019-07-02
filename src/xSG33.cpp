@@ -186,7 +186,6 @@ void xSG33::multiRead(uint8_t reg, uint8_t *buf, uint8_t num)
 	//on arduino we need to read in 32 byte chunks
 	while (pos < num)
 	{
-
 		uint8_t read_now = min((uint8_t)32, (uint8_t)(num - pos));
 		Wire.beginTransmission(SG33_I2C_ADDR);
 		Wire.write((uint8_t)reg + pos);

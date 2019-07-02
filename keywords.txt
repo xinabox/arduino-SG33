@@ -11,8 +11,16 @@
 # Methods and Functions (KEYWORD2)
 #######################################
 
-begin   				 KEYWORD2
-
+begin   KEYWORD2
+getTVOC KEYWORD2
+getCO2  KEYWORD2
+setEnvironmentData  KEYWORD2
+enableInterrupt KEYWORD2
+disableInterrupt    KEYWORD2
+getErrorCode    KEYWORD2
+setDriveMode    KEYWORD2
+dataAvailable   KEYWORD2
+getAlgorithmResults KEYWORD2
 
 #######################################
 # Constants 			(LITERAL1)
