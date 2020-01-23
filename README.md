@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/xinabox/arduino-SG33.svg?branch=master)](https://travis-ci.org/xinabox/arduino-SG33)
+
 # ☒CHIP SG33 
 <img src="extras/SG33 V0.5.0.JPG" width="35%" height="auto" align="right">
 Sensor Module based on the CCS811 Air Quality sensor.
