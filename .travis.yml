@@ -22,4 +22,4 @@ install:
     - unzip /tmp/arduino-SW01.zip -d /tmp/
 
 script:
-    - platformio ci --lib="." --lib="/tmp/arduino-CORE-master" --board=uno --board=zero --board=xinabox_cw01 --board=xinabox_cw02
+    - platformio ci --lib="." --lib="/tmp/arduino-CORE-master" --lib="/tmp/arduino-SW01-master" --board=uno --board=zero --board=xinabox_cw01 --board=xinabox_cw02
