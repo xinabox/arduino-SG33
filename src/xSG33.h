@@ -1,12 +1,12 @@
 /*
-	This is a library for the SG33 
+	This is a library for the SG33
 	Air Quality sensor
 
 	The board uses I2C for communication.
-	
+
 	The board communicates with the following I2C device:
 	-	CSS811
-	
+
 	Data Sheets:
 	CSS811 - http://ams.com/eng/content/download/951091/2269479/471718
 */
@@ -54,18 +54,18 @@
 
 /*=========================================================================*/
 
-class xSG33 : public xCoreClass
+class sg33v1 : public xCoreClass
 {
   public:
 	/*
 		* Constructor
 		* Creates a new instance of Sensor class.
 		*/
-	xSG33();
-	xSG33(uint8_t addr);
+	sg33v1();
+	sg33v1(uint8_t addr);
 
 	/*
-		* Runs the setup of the sensor. 
+		* Runs the setup of the sensor.
 		* Call this in setup(), before reading any sensor data.
 		*
 		* @return true if setup was successful.
@@ -88,15 +88,6 @@ class xSG33 : public xCoreClass
 		*/
 	uint16_t getCO2(void);
 
-	/*
-		* Used to get the temperature value in degress farenhied.
-		* Call this in loop(). Used to get sensor temperature.
-		*
-		* @input humidity, the ambient humidity.
-		* @input tempC, the ambient temperature in degress C.
-		*
-		* @return none
-		*/
 	void setEnvironmentData(float humidity, float tempC);
 
 	void enableInterrupt();
@@ -132,4 +123,115 @@ class xSG33 : public xCoreClass
 	uint16_t _eCO2, _TVOC;
 };
 
+
+// the i2c address
+#define SGP30_I2CADDR_DEFAULT 0x58 ///< SGP30 has only one I2C address
+
+// commands and constants
+#define SGP30_FEATURESET 0x0020    ///< The required set for this library
+#define SGP30_CRC8_POLYNOMIAL 0x31 ///< Seed for SGP30's CRC polynomial
+#define SGP30_CRC8_INIT 0xFF       ///< Init value for CRC
+#define SGP30_WORD_LEN 2           ///< 2 bytes per word
+
+class sg33v2 {
+public:
+  sg33v2();
+  boolean begin(boolean initSensor = true);
+  boolean softReset();
+  boolean IAQinit();
+  boolean IAQmeasure();
+  boolean IAQmeasureRaw();
+
+  boolean getIAQBaseline(uint16_t *eco2_base, uint16_t *tvoc_base);
+  boolean setIAQBaseline(uint16_t eco2_base, uint16_t tvoc_base);
+  boolean setHumidity(uint32_t absolute_humidity);
+
+  /** The last measurement of the IAQ-calculated Total Volatile Organic
+   *  Compounds in ppb. This value is set when you call {@link IAQmeasure()} **/
+  uint16_t TVOC;
+
+  /** The last measurement of the IAQ-calculated equivalent CO2 in ppm. This
+   *  value is set when you call {@link IAQmeasure()} **/
+  uint16_t eCO2;
+
+  /** The last measurement of the IAQ-calculated equivalent CO2 in ppm. This
+   *  value is set when you call {@link IAQmeasureRaw()} **/
+  uint16_t rawH2;
+
+  /** The last measurement of the IAQ-calculated equivalent CO2 in ppm. This
+   *  value is set when you call {@link IAQmeasureRaw()} **/
+  uint16_t rawEthanol;
+
+  /** The 48-bit serial number, this value is set when you call {@link begin()}
+   * **/
+  uint16_t serialnumber[3];
+
+private:
+  void write(uint8_t address, uint8_t *data, uint8_t n);
+  void read(uint8_t address, uint8_t *data, uint8_t n);
+  bool readWordFromCommand(uint8_t command[], uint8_t commandLength,
+                           uint16_t delay, uint16_t *readdata = NULL,
+                           uint8_t readlen = 0);
+  uint8_t generateCRC(uint8_t data[], uint8_t datalen);
+
+};
+
+class xSG33
+{
+  public:
+	/*
+		* Constructor
+		* Creates a new instance of Sensor class.
+		*/
+	xSG33();
+	xSG33(uint8_t addr);
+
+	/*
+		* Runs the setup of the sensor.
+		* Call this in setup(), before reading any sensor data.
+		*
+		* @return true if setup was successful.
+		*/
+	bool begin();
+
+	/*
+		* Used to get the TVOC value in ppb.
+		* Call this in loop(). Used to get sensor temperature.
+		*
+		* @return TVOC, returns float value of TVOC.
+		*/
+	uint16_t getTVOC(void);
+
+	/*
+		* Used to get the eC02 value in ppm.
+		* Call this in loop(). Used to get sensor temperature.
+		*
+		* @return C02, returns float value of C02.
+		*/
+	uint16_t getCO2(void);
+
+	void setEnvironmentData(float humidity, float tempC);
+
+	void enableInterrupt();
+	void disableInterrupt();
+
+	uint8_t getErrorCode(void);
+
+	void setDriveMode(uint8_t mode);
+
+	/*
+		* Check for the availability of new data
+		*
+		*@return boolean, true for data available
+		*/
+	bool dataAvailable(void);
+
+	bool getAlgorithmResults(void);
+
+  private:
+  sg33v1 v1;
+  sg33v2 v2;
+  uint32_t getAbsoluteHumidity(float temperature, float humidity);
+  uint8_t version;
+};
 #endif
