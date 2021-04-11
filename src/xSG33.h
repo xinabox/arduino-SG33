@@ -173,6 +173,7 @@ private:
                            uint16_t delay, uint16_t *readdata = NULL,
                            uint8_t readlen = 0);
   uint8_t generateCRC(uint8_t data[], uint8_t datalen);
+  bool _read(uint8_t *buffer, size_t len);
 
 };
 

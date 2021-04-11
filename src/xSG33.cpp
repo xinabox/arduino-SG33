@@ -441,10 +441,11 @@ bool sg33v2::readWordFromCommand(uint8_t command[],
 								 uint8_t readlen)
 {
 	Wire.beginTransmission(SGP30_I2CADDR_DEFAULT);
-	if (!Wire.write(command, commandLength))
+	for (uint8_t i = 0; i < commandLength; i++)
 	{
-		return false;
+		Wire.write(command[i]);
 	}
+	Wire.endTransmission(true);
 
 	delay(delayms);
 
@@ -453,29 +454,24 @@ bool sg33v2::readWordFromCommand(uint8_t command[],
 
 	uint8_t replylen = readlen * (SGP30_WORD_LEN + 1);
 	uint8_t replybuffer[replylen];
-
-	size_t recv = Wire.requestFrom(SGP30_I2CADDR_DEFAULT, readlen);
-	if (recv != readlen)
+	if (!_read(replybuffer, replylen))
 	{
 		return false;
-	}
-	for (uint16_t i = 0; i < readlen; i++)
-	{
-		readdata[i] = Wire.read();
-	}
-	// if (!i2c_dev->read(replybuffer, replylen))
-	// {
-	// 	return false;
-	// }
+	};
+		// if (!i2c_dev->read(replybuffer, replylen))
+		// {
+		// 	return false;
+		// }
 
+//#define I2C_DEBUG 1
 	for (uint8_t i = 0; i < readlen; i++)
 	{
 		uint8_t crc = generateCRC(replybuffer + i * 3, 2);
 #ifdef I2C_DEBUG
-		Serial.print("\t\tCRC calced: 0x");
-		Serial.print(crc, HEX);
-		Serial.print(" vs. 0x");
-		Serial.println(replybuffer[i * 3 + 2], HEX);
+		SerialUSB.print("\t\tCRC calced: 0x");
+		SerialUSB.print(crc, HEX);
+		SerialUSB.print(" vs. 0x");
+		SerialUSB.println(replybuffer[i * 3 + 2], HEX);
 #endif
 		if (crc != replybuffer[i * 3 + 2])
 			return false;
@@ -484,8 +480,8 @@ bool sg33v2::readWordFromCommand(uint8_t command[],
 		readdata[i] <<= 8;
 		readdata[i] |= replybuffer[i * 3 + 1];
 #ifdef I2C_DEBUG
-		Serial.print("\t\tRead: 0x");
-		Serial.println(readdata[i], HEX);
+		SerialUSB.print("\t\tRead: 0x");
+		SerialUSB.println(readdata[i], HEX);
 #endif
 	}
 	return true;
@@ -508,6 +504,20 @@ uint8_t sg33v2::generateCRC(uint8_t *data, uint8_t datalen)
 		}
 	}
 	return crc;
+}
+
+bool sg33v2::_read(uint8_t *buffer, size_t len)
+{
+  size_t recv = Wire.requestFrom(SGP30_I2CADDR_DEFAULT, (uint8_t)len, true);
+  if (recv != len)
+  {
+  	return false;
+  }
+  for (uint8_t i = 0; i < len; i++)
+  {
+    buffer[i] = Wire.read();
+  }
+  return true;
 }
 
 xSG33::xSG33(void)
@@ -534,7 +544,7 @@ bool xSG33::begin(void)
 	if (version == 1)
 		return v1.begin();
 	if (version == 2)
-		return v2.begin();
+		return v2.begin(true);
 }
 
 bool xSG33::getAlgorithmResults(void)
