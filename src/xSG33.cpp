@@ -508,7 +508,7 @@ uint8_t sg33v2::generateCRC(uint8_t *data, uint8_t datalen)
 
 bool sg33v2::_read(uint8_t *buffer, size_t len)
 {
-  size_t recv = Wire.requestFrom(SGP30_I2CADDR_DEFAULT, (uint8_t)len, true);
+  size_t recv = Wire.requestFrom((uint8_t)SGP30_I2CADDR_DEFAULT, len, true); //remove 2nd cast, add 1st cast
   if (recv != len)
   {
   	return false;
@@ -545,6 +545,8 @@ bool xSG33::begin(void)
 		return v1.begin();
 	if (version == 2)
 		return v2.begin(true);
+		
+	return false; //should never be reached
 }
 
 bool xSG33::getAlgorithmResults(void)
