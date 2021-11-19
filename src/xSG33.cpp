@@ -555,6 +555,7 @@ bool xSG33::getAlgorithmResults(void)
 		return v1.getAlgorithmResults();
 	if (version == 2)
 		return v2.IAQmeasure();
+	return false; //should never be reached
 }
 
 bool xSG33::dataAvailable(void)
@@ -570,6 +571,7 @@ uint16_t xSG33::getTVOC(void)
 		return v1.getTVOC();
 	if (version == 2)
 		return v2.TVOC;
+	return 0; //should never be reached
 }
 
 uint16_t xSG33::getCO2(void)
@@ -578,6 +580,7 @@ uint16_t xSG33::getCO2(void)
 		return v1.getCO2();
 	if (version == 2)
 		return v2.eCO2;
+	return 0; //should never be reached
 }
 
 void xSG33::setEnvironmentData(float humidity, float tempC)
